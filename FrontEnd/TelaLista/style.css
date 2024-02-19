@@ -1,0 +1,29 @@
+.btn-voltar {
+    width: 250px; /* Ajuste a largura conforme necessário */
+  }
+  .custom-td {
+    min-height: calc(100% + 1px)!important;
+  }
+  #coordenadasAssinante {
+    color: #007bff; /* Cor do texto */
+    text-decoration: none; /* Remove o sublinhado */
+    background-color: #f8f9fa; /* Cor de fundo */
+    padding: 10px; /* Espaçamento interno */
+    border-radius: 5px; /* Bordas arredondadas */
+  }
+  
+  #coordenadasAssinante:hover {
+    color: #0056b3; /* Cor do texto quando o mouse está sobre o link */
+    background-color: #e9ecef; /* Cor de fundo quando o mouse está sobre o link */
+    border: 1px solid; /* Adiciona uma borda de 1px */
+    
+  }
+  body, .container-fluid {
+    margin: 0;
+    padding: 0;
+  }
+  /* Define a largura da coluna Rua */
+th.col-acoes,
+td.col-acoes {
+  width: 100px; /* Ajuste este valor conforme necessário */
+}

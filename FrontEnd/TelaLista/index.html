@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tela Lista</title>
+    <!-- Certifique-se de incluir o Bootstrap depois do jQuery -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <body>
+
+    <div class="container-fluid mt-5">
+      <h1 id="titulo-tabela" class="mb-4 text-center">Tabela de Assinantes</h1>
+      <div class="table-responsive"> <!-- Adiciona a div com a classe 'table-responsive' -->
+        <table class="table table-hover"> <!-- Adiciona a classe 'w-100' -->
+          <thead class="thead-dark">
+            <tr>
+              <th scope="col" class="text-center">Código</th>
+              <th scope="col" class="text-center">Nome</th>
+              <th scope="col" class="text-center">Rua</th>
+              <th scope="col" class="text-center">Número</th>
+              <th scope="col" class="text-center">Bairro</th>
+              <th scope="col" class="text-center">Cidade</th>
+              <th scope="col" class="text-center">Coordenadas</th>
+              <th scope="col" class="text-center">Ações</th>
+            </tr>
+          </thead>
+          <tbody id="corpo-tabela"></tbody>
+        </table>
+      </div>
+    </div>
+    <!-- modal de edição -->
+    <div class="modal fade" id="modalAssinantes" tabindex="-1" role="dialog" aria-labelledby="modalAssinantesLabel" aria-hidden="true">
+      <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalAssinantesLabel">Cadastrar Assinantes</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <!-- Adicione os campos desejados aqui -->
+            <form class="formulario" id="formAssinantes" action="/upload" method="post" enctype="multipart/form-data">
+              
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="codigoAssinante" placeholder="Ex: 12345">
+                  <label for="codigoAssinante" style="left: -3px;">Código do Assinante:</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="text" class="form-control" id="nomeAssinante" placeholder="Ex: João da Silva">
+                  <label for="nomeAssinante" style="left: -3px;">Nome do Assinante:</label>
+                </div>
+              
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="ruaAssinante" placeholder="Ex: Rua Benjamin Constant">
+                <label for="ruaAssinante">Rua:</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="number" class="form-control" id="numeroAssinante" placeholder="Ex: 150">
+                <label for="numeroAssinante">Número:</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="bairroAssinante" placeholder="Ex: Centro">
+                <label for="bairroAssinante">Bairro:</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="cidadeAssinante" placeholder="Ex: Lajeado">
+                <label for="cidadeAssinante">Cidade:</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="ordemAssinante" placeholder="Ex: 1">
+                <label for="ordemAssinante">Ordem de Entrega</label>
+              </div>
+              <div class="form-floating mb-3">
+                <input type="text" class="form-control" id="coordenadasAssinante" placeholder="G2QM+42">
+                <label for="coordenadasAssinante">Coordenadas</label>
+              </div>
+              <div class="form-floating mb-3">
+                <select class="form-control" id="selectTipo">
+                  <option selected>Selecione o tipo de assinatura</option>
+                  <option value="1">Diário</option>
+                  <option value="2">Semanal</option>
+                </select>
+                <label for="selectTipo">Tipo</label>
+              </div>
+              <div class="form-floating mb-3">
+                <select class="form-control" id="selectEntregador">
+                  <option selected>Selecione o entregador</option>
+                  <option value="1">Fernando</option>
+                  <option value="2">Outros</option>
+                </select>
+                <label for="selectEntregador">Entregador</label>
+              </div>
+              <div class="form-floating mb-3">
+                <textarea class="form-control" id="descricao" rows="3" placeholder="Ex: Casa com jardim florido na esquina. Entregar os jornais na caixa de correio à direita da entrada."></textarea>
+                <label for="descricao">Descrição:</label>
+              </div>
+              <div class="mb-3">
+                <label for="imagem" class="form-label" >Escolher Imagem:</label>
+                <input type="file" class="form-control" id="imagem" name="file" accept="image/*" required>
+              </div>
+              <div class="modal-footer">
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- modal de cadastro com sucesso -->
+    <div class="modal fade" id="modalCadastroSucesso" tabindex="-1" role="dialog" aria-labelledby="modalCadastroSucessoLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="modalCadastroSucessoLabel">Cadastro Realizado com Sucesso</h5>
+            <button type="button" class="btn-close" data-dismiss="modal" aria-label="Fechar"></button>
+          </div>
+          <div class="modal-body">
+            Parabéns! O cadastro foi realizado com sucesso.
+          </div>
+          <div class="modal-footer d-flex justify-content-center">
+            <button type="button" class="btn btn-success" data-dismiss="modal">Fechar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer mt-auto py-3 bg-light">
+      <div class="container">
+        <div class="row">
+          <div class="col-12">
+            <button id="btnVoltar" class="btn btn-outline-secondary">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-backspace-fill" viewBox="0 0 16 16">
+                <path d="M15.683 3a2 2 0 0 0-2-2h-7.08a2 2 0 0 0-1.519.698L.241 7.35a1 1 0 0 0 0 1.302l4.843 5.65A2 2 0 0 0 6.603 15h7.08a2 2 0 0 0 2-2zM5.829 5.854a.5.5 0 1 1 .707-.708l2.147 2.147 2.146-2.147a.5.5 0 1 1 .707.708L9.39 8l2.146 2.146a.5.5 0 0 1-.707.708L8.683 8.707l-2.147 2.147a.5.5 0 0 1-.707-.708L7.976 8z"/>
+              </svg>
+              Voltar
+            </button>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- modais -->
+
+      <div class="modal fade" id="modalVerAssinante" tabindex="-1" role="dialog" aria-labelledby="modalVerAssinanteLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="meuModalLabel">Assinantes</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p>Codigo: <span id="codigoAssinante"></span></p>
+              <p>Ordem de entrega: <span id="ordemAssinante"></span></p>
+              <p>Nome: <span id="nomeAssinante"></span></p>
+              <p>Rua: <span id="ruaAssinante"></span></p>
+              <p>Número: <span id="numeroAssinante"></span></p>
+              <p>Bairro: <span id="bairroAssinante"></span></p>
+              <p>Cidade: <span id="cidadeAssinante"></span></p>
+              <p>Coordenadas: <a id="coordenadasAssinante" href="" target="_blank">Clique aqui  <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="currentColor" class="bi bi-globe-americas" viewBox="0 0 16 16">
+                <path d="M8 0a8 8 0 1 0 0 16A8 8 0 0 0 8 0M2.04 4.326c.325 1.329 2.532 2.54 3.717 3.19.48.263.793.434.743.484q-.121.12-.242.234c-.416.396-.787.749-.758 1.266.035.634.618.824 1.214 1.017.577.188 1.168.38 1.286.983.082.417-.075.988-.22 1.52-.215.782-.406 1.48.22 1.48 1.5-.5 3.798-3.186 4-5 .138-1.243-2-2-3.5-2.5-.478-.16-.755.081-.99.284-.172.15-.322.279-.51.216-.445-.148-2.5-2-1.5-2.5.78-.39.952-.171 1.227.182.078.099.163.208.273.318.609.304.662-.132.723-.633.039-.322.081-.671.277-.867.434-.434 1.265-.791 2.028-1.12.712-.306 1.365-.587 1.579-.88A7 7 0 1 1 2.04 4.327Z"/>
+              </svg></a></p>
+              <p>Tipo: <span id="tipoAssinante"></span></p>
+              <!-- Carrossel -->
+              <div id="meuCarrossel" class="carousel slide" data-ride="carousel">
+                <div class="carousel-inner">
+                  <div class="carousel-item active">
+                    <img src="" class="d-block w-100" alt="Imagem 1">
+                  </div>
+               
+                  <!-- Adicione mais itens conforme necessário -->
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carouselExample" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Anterior</font></font></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carouselExample" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden"><font style="vertical-align: inherit;"><font style="vertical-align: inherit;">Próximo</font></font></span>
+                </button>
+              </div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fechar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+           
+        </div>
+      </div>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+
+    <script src="script.js"></script>
+  </body>
+</html>
