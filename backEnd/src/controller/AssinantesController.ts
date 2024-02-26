@@ -7,7 +7,6 @@ export class AssinantesController {
 
   async list(req: Request, res: Response): Promise<Response> {
     let nome = req.query.nome;
-
     let assinantes: Assinantes[] = await Assinantes.find({
       where: { status: true },
       order: { ordemEntrega: "ASC" },
@@ -16,17 +15,17 @@ export class AssinantesController {
   }
 
   async listByUser(req: Request, res: Response): Promise<Response> {
-    
-    let userId = Number(req.params.id);  // Obtem o ID do usuário dos parâmetros da URL
+    let userId = Number(req.params.id); 
     let assinantes: Assinantes[] = await Assinantes.find({
-      where: { status: true, usuario_id: userId }, // Filtra os assinantes pelo ID do usuário
+      where: { status: true, usuario_id: userId }, 
       order: { ordemEntrega: "ASC" },
     });
     return res.status(200).json(assinantes);
   }
 
+
   async create(req: Request, res: Response): Promise<Response> {
-    let body = req.body; //pega o que vem da tela
+    let body = req.body; 
 
     let assinante: Assinantes = await Assinantes.create({
       codigo: body.codigo,
@@ -45,7 +44,7 @@ export class AssinantesController {
     }).save(); 
 
 
-    return res.status(200).json(assinante); //retorna o usuario criado e o status que deu certo
+    return res.status(200).json(assinante); 
   }
 
   async update(req: Request, res: Response): Promise<Response> {
@@ -112,30 +111,30 @@ export class AssinantesController {
 
 
 
-  // async gerarCSVEventos(req: Request, res: Response): Promise<void> {
-  //   try {
-  //     const eventos: Evento[] = await Evento.find(); // Substitua pelo método de busca apropriado
+  async gerarCSVAssinantes(req: Request, res: Response): Promise<void> {
+    try {
+      const assinantes: Assinantes[] = await Assinantes.find(); 
 
-  //     if (eventos.length === 0) {
-  //       res.status(404).json({ mensagem: "Nenhum evento encontrado." });
-  //     }
+      if (assinantes.length === 0) {
+        res.status(404).json({ mensagem: "Nenhum evento encontrado." });
+      }
 
-  //     let csv = '"ID";"Nome";"Data de Início";"Data de Fim";"status"\n';
+      let csv = '"ID";"Nome";"Data de Início";"Data de Fim";"status"\n';
 
-  //     for (const evento of eventos) {
-  //       csv += `"${evento.id}";"${evento.nome}";"${evento.dataInicio}";"${evento.dataFim}";"${evento.status}"\n`;
-  //     }
+      for (const assinante of assinantes) {
+        csv += `"${assinante.id}";"${assinante.nome}";"${assinante.rua}";"${assinante.numero}";"${assinante.status}"\n`;
+      }
 
-  //     // Envie o arquivo CSV como resposta
-  //     res.setHeader("Content-Type", "text/csv");
-  //     res.setHeader("Content-Disposition", "attachment; filename=eventos.csv");
-  //     res.status(200).send(csv);
-  //   } catch (error) {
-  //     console.error("Erro ao gerar o arquivo CSV de eventos:", error);
-  //     res
-  //       .status(500)
-  //       .json({ mensagem: "Erro ao gerar o arquivo CSV de eventos." });
-  //   }
-  // }
+      // Envie o arquivo CSV como resposta
+      res.setHeader("Content-Type", "text/csv");
+      res.setHeader("Content-Disposition", "attachment; filename=assinantes.csv");
+      res.status(200).send(csv);
+    } catch (error) {
+      console.error("Erro ao gerar o arquivo CSV de eventos:", error);
+      res
+        .status(500)
+        .json({ mensagem: "Erro ao gerar o arquivo CSV de eventos." });
+    }
+  }
 }
 

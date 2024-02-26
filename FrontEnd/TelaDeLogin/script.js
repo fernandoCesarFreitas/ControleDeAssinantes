@@ -1,39 +1,37 @@
 let email = document.getElementById("email");
 let senha = document.getElementById("password");
-let form = document.getElementById('formulario');
-console.log(email, senha, form);
-form.addEventListener('submit', async (event) => {
-    event.stopPropagation(); //para nao recarregar a pagina
-    event.preventDefault();
+let form = document.getElementById("formulario");
 
-    let payload = {
-        email: email.value,
-        senha: senha.value,
-    }
-    console.log(payload);
-    let url = 'http://localhost:3000/login';
-    let method = 'post';
+form.addEventListener("submit", async (event) => {
+  event.stopPropagation(); 
+  event.preventDefault();
 
-    let resposta = await fetch(url, {
-        method, //pode ser maiusculo ou minusculo
-        headers: {
-            'Content-Type': 'application/json', //o que esta enviando
-            'Accept': 'application/json', //o que ira aceitar receber
-        },
-        body: JSON.stringify(payload) //converte o Json para texto
-    });
+  let payload = {
+    email: email.value,
+    senha: senha.value,
+  };
+  let url = "http://localhost:3000/login";
+  let method = "post";
 
-    if (resposta.ok) { // .ok 
-//salvar o token no local storage
-        let dados = await resposta.json();
-        console.log(dados)
-        localStorage.setItem('authorization', `${dados.type} ${dados.token}, ${dados.nome}`);
-        localStorage.setItem('user', JSON.stringify(dados.usuario));
-        window.location.href = '../TelaPrincipal/index.html' //redireciona á pagina principal
-    } else if (resposta.status == 401) {
-        let dados = await resposta.json();
-        alert(dados.mensagem);
-    } else {
-        alert('algo deu errado!')
-    }
+  let resposta = await fetch(url, {
+    method, 
+    headers: {
+      "Content-Type": "application/json", 
+      Accept: "application/json", 
+    },
+    body: JSON.stringify(payload), 
+  });
+
+  if (resposta.ok) {
+    
+    let dados = await resposta.json();
+    localStorage.setItem("authorization", `${dados.type} ${dados.token}`);
+    localStorage.setItem("user", JSON.stringify(dados.usuario));
+    window.location.href = "../TelaPrincipal/index.html"; 
+  } else if (resposta.status == 401) {
+    let dados = await resposta.json();
+    alert(dados.mensagem);
+  } else {
+    alert("algo deu errado!");
+  }
 });

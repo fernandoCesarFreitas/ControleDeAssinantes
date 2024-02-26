@@ -1,10 +1,10 @@
-// ref formulario entregadores
+
 let form = document.getElementById("formulario");
 let nome = document.getElementById("nomeUsuario");
 let email = document.getElementById("emailUsuario");
 let senha = document.getElementById("senhaUsuario");
 
-// ref formulario assinantes
+
 let formAssinantes = document.getElementById("formAssinantes");
 let codigoAssinante = document.getElementById("codigoAssinante");
 let nomeAssinante = document.getElementById("nomeAssinante");
@@ -18,10 +18,11 @@ let selectTipo = document.getElementById("selectTipo");
 let selectEntregador = document.getElementById("selectEntregador");
 let descricao = document.getElementById("descricao");
 let inputImagem = document.getElementById("imagem").files[0];
+let btnSair = document.getElementById("btnSair");
 
-
+//cadastro de Entregadores
 form.addEventListener("submit", async (event) => {
-  event.stopPropagation(); //para nao recarregar a pagina
+  event.stopPropagation(); 
   event.preventDefault();
 
   let payload = {
@@ -34,12 +35,13 @@ form.addEventListener("submit", async (event) => {
   let method = "post";
 
   let resposta = await fetch(url, {
-    method, //pode ser maiusculo ou minusculo
+    method,
     headers: {
-      "Content-Type": "application/json", //o que esta enviando
-      Accept: "application/json", //o que ira aceitar receber
+      "Content-Type": "application/json", 
+      Accept: "application/json", 
+      Authorization: authorization,
     },
-    body: JSON.stringify(payload), //converte o Json para texto
+    body: JSON.stringify(payload), 
   });
 
   let modalCadastroSucesso = $("#modalCadastroSucesso");
@@ -47,12 +49,13 @@ form.addEventListener("submit", async (event) => {
 
   if (resposta.ok) {
     modalUsuario.modal("hide");
-    // Exibir o modal de sucesso
     modalCadastroSucesso.modal("show");
 
-    // Adicionar um ouvinte de evento para o evento 'hidden.bs.modal'
+    setTimeout(() => {
+      modalCadastroSucesso.modal("hide");
+    }, 2000);
+
     modalCadastroSucesso.one("hidden.bs.modal", function (e) {
-      // Redirecionar somente quando o modal for fechado
       window.location.href = "../TelaPrincipal/index.html";
     });
   } else if (resposta.status == 401) {
@@ -63,6 +66,8 @@ form.addEventListener("submit", async (event) => {
     alert(`Erro ${resposta.status}: ${mensagemErro}`);
   }
 });
+
+// Cadastro de Assinantes
 
 formAssinantes.addEventListener("submit", async (event) => {
   event.stopPropagation(); //para nao recarregar a pagina
@@ -97,28 +102,28 @@ formAssinantes.addEventListener("submit", async (event) => {
     let method = "post";
 
     let resposta = await fetch(url, {
-      method, //pode ser maiusculo ou minusculo
+      method, 
       headers: {
-        "Content-Type": "application/json", //o que esta enviando
-        Accept: "application/json", //o que ira aceitar receber
+        "Content-Type": "application/json",
+        Accept: "application/json", 
+        Authorization: authorization,
       },
-      body: JSON.stringify(payload), //converte o Json para texto
+      body: JSON.stringify(payload), 
     });
 
     let modalCadastroSucesso = $("#modalCadastroSucesso");
     let modalAssinantes = $("#modalUsuario");
 
     if (resposta.ok) {
-     $("#modalCadastroSucesso").modal("show");
+      $("#modalCadastroSucesso").modal("show");
 
-      // Fechar o modal após 3 segundos (3000 milissegundos)
+      
       setTimeout(() => {
         $("#modalCadastroSucesso").modal("hide");
       }, 2000);
 
-      // Adicionar um ouvinte de evento para o evento 'hidden.bs.modal'
+     
       modalCadastroSucesso.one("hidden.bs.modal", function (e) {
-        // Redirecionar somente quando o modal for fechado
         window.location.href = "../TelaPrincipal/index.html";
       });
     } else if (resposta.status == 401) {
@@ -131,31 +136,34 @@ formAssinantes.addEventListener("submit", async (event) => {
   };
 });
 
-fetch("http://localhost:3000/usuarios")
+fetch("http://localhost:3000/usuarios", {
+  headers: {
+    Authorization: authorization,
+  },
+})
   .then((response) => response.json())
   .then((usuariosAtivos) => {
     let row = null;
     usuariosAtivos.forEach((usuario, index) => {
-      // Para cada 2 usuários, criamos uma nova linha
       if (index % 2 === 0) {
         row = document.createElement("div");
         row.className = "row row-cols-2";
       }
 
       let divCol = document.createElement("div");
-      divCol.className = "col-sm-6 mb-4";
+      divCol.className = "col-sm-6 mb-5";
 
       let divCard = document.createElement("div");
       divCard.className = "card";
 
       let imgContainer = document.createElement("div");
-      imgContainer.className = "rounded-top"; // Adiciona a classe rounded-top
-      imgContainer.style.height = "300px"; // Ajuste para a altura desejada
+      imgContainer.className = "rounded-top"; 
+      imgContainer.style.height = "200px"; 
       imgContainer.style.width = "100%";
       imgContainer.style.overflow = "hidden";
 
       let img = document.createElement("img");
-      img.className = 'img-thumbnail';
+      img.className = "img-thumbnail";
       img.style.width = "100%";
       img.style.height = "100%";
       img.style.objectFit = "cover";
@@ -187,28 +195,43 @@ fetch("http://localhost:3000/usuarios")
 
       let cardText = document.createElement("p");
       cardText.className = "card-text";
-      cardText.textContent = usuario.nome; // Ou qualquer outro texto que você queira exibir
+      cardText.textContent = usuario.nome; 
 
       divCardBody.appendChild(cardText);
       divCard.appendChild(divCardBody);
       divCol.appendChild(divCard);
 
-      divCard.addEventListener('click', function() {
+      divCard.addEventListener("click", function () {
         window.location.href = `../TelaLista/index.html?usuarioId=${usuario.id}`;
+        
+       
       });
-      // href="../TelaLista/index.html"
+      
 
       row.appendChild(divCol);
 
-      // Se for o segundo card ou o último usuário, adicionamos a linha ao container
       if (index % 2 !== 0 || index === usuariosAtivos.length - 1) {
         document.getElementById("card-container").appendChild(row);
       }
     });
+    
+    function onCardsLoaded() {
+      document.body.style.display = 'none';
+      void document.body.offsetHeight;
+      document.body.style.display = '';
+    }
+    onCardsLoaded();
   });
 
 async function getEntregadores() {
-  let response = await fetch("http://localhost:3000/usuarios");
+  let token = localStorage.getItem("authorization");
+
+  let response = await fetch("http://localhost:3000/usuarios", {
+    headers: {
+      Authorization: token,
+    },
+  });
+
   let entregadores = await response.json();
   console.log(entregadores);
   return entregadores;
@@ -227,4 +250,9 @@ async function setEntregadores() {
     selectEntregador.appendChild(option);
   }
 }
+btnSair.addEventListener("click", function () {
+  localStorage.removeItem("authorization");
+  localStorage.removeItem("user");
+  window.location.href = "caminho/para/sua/pagina/de/login.html";
+});
 setEntregadores();

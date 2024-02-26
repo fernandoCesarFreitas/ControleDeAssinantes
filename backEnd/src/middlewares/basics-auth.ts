@@ -8,6 +8,8 @@ export async function basicAuth(
   res: Response,
   next: NextFunction
 ): Promise<Response | void> {
+  
+  console.log("cheguei aki", req.headers.authorization);
   let authorization = req.headers.authorization;
 
   if (!authorization) {

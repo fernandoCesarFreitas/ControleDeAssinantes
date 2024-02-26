@@ -1,0 +1,32 @@
+html, body, .container-fluid {
+    margin: 0px !important;  
+  }
+ 
+  .custom-logo {
+    width:100%; 
+    height: auto;
+  }
+  .custom-div {
+    border-left: 1px solid #000;
+    box-shadow: -2px 0 4px rgba(0, 0, 0, 0.3); 
+    height: 100%;
+    width: 100%;
+  }
+  
+  .custom-input {
+      border: none;
+      border-bottom: 1px solid #000; 
+      border-radius: 0;
+      text-align: center;
+      width: 75%;
+      margin: auto;
+      transition: border-bottom-width 0.3s ease, box-shadow 0.3s ease; 
+    }
+    .custom-input:focus {
+        outline: none;
+        box-shadow: 0 2px 2px rgba(0, 0, 0, 0.2), 0 -1px 1px rgba(0, 0, 0, 0.2);
+    }
+  .btn {
+    display: inline-block; 
+  }
+ 

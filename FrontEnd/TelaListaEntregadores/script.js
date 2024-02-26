@@ -84,6 +84,7 @@ function abrirModalEditar(usuario) {
         headers: {
           "Content-Type": "application/json", //o que esta enviando
           Accept: "application/json", //o que ira aceitar receber
+          "Authorization": localStorage.getItem("authorization"),
         },
         body: JSON.stringify(payload), //converte o Json para texto
       });
@@ -114,8 +115,14 @@ async function buscarEntregadores() {
     const urlParams = new URLSearchParams(window.location.search);
     const usuarioId = urlParams.get("usuarioId");
     let url = "http://localhost:3000/usuarios";
+    let token = localStorage.getItem('authorization');
 
-    const resposta = await fetch(url);
+    const resposta = await fetch(url, {
+      headers: {
+        'Authorization': token
+      }
+    });
+
     const usuarios = await resposta.json();
     console.log(usuarios);
     const corpoTabela = document.getElementById("corpo-tabela");
@@ -131,7 +138,14 @@ async function buscarEntregadores() {
 
 async function atualizarTabela() {
   try {
-    const resposta = await fetch("http://localhost:3000/usuarios");
+    let token = localStorage.getItem('authorization');
+
+    const resposta = await fetch("http://localhost:3000/usuarios", {
+      headers: {
+        'Authorization': token
+      }
+    });
+
     const usuarios = await resposta.json();
 
     const corpoTabela = document.getElementById("corpo-tabela");
@@ -163,11 +177,15 @@ document
   .addEventListener("click", async function () {
     // Obter o id do usuário a ser excluído
     const id = this.getAttribute("data-id");
+    let token = localStorage.getItem('authorization');
 
     // Excluir o usuário
     try {
       await fetch(`http://localhost:3000/usuarios/${id}`, {
         method: "delete",
+        headers: {
+          'Authorization': token
+        }
       });
       window.location.reload();
     } catch (error) {
