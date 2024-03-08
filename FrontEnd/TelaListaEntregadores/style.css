@@ -1,20 +1,20 @@
 .btn-voltar {
-    width: 250px; /* Ajuste a largura conforme necessário */
+    width: 250px; 
   }
   .custom-td {
     min-height: calc(100% + 1px)!important;
   }
   #coordenadasAssinante {
-    color: #007bff; /* Cor do texto */
-    text-decoration: none; /* Remove o sublinhado */
-    background-color: #f8f9fa; /* Cor de fundo */
-    padding: 10px; /* Espaçamento interno */
-    border-radius: 5px; /* Bordas arredondadas */
+    color: #007bff;
+    text-decoration: none; 
+    background-color: #f8f9fa; 
+    padding: 10px; 
+    border-radius: 5px; 
   }
   
   #coordenadasAssinante:hover {
-    color: #0056b3; /* Cor do texto quando o mouse está sobre o link */
-    background-color: #e9ecef; /* Cor de fundo quando o mouse está sobre o link */
-    border: 1px solid; /* Adiciona uma borda de 1px */
+    color: #0056b3; 
+    background-color: #e9ecef; 
+    border: 1px solid; 
     
   }

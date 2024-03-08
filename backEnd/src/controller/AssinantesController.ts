@@ -9,7 +9,7 @@ export class AssinantesController {
     let nome = req.query.nome;
     let assinantes: Assinantes[] = await Assinantes.find({
       where: { status: true },
-      order: { ordemEntrega: "ASC" },
+      order: { ordem: "ASC" },
     });
     return res.status(200).json(assinantes);
   }
@@ -18,7 +18,7 @@ export class AssinantesController {
     let userId = Number(req.params.id); 
     let assinantes: Assinantes[] = await Assinantes.find({
       where: { status: true, usuario_id: userId }, 
-      order: { ordemEntrega: "ASC" },
+      order: { ordem: "ASC" },
     });
     return res.status(200).json(assinantes);
   }
@@ -37,7 +37,7 @@ export class AssinantesController {
       tipo: body.tipo,
       descricao: body.descricao,
       coordenadas: body.coordenadas,
-      ordemEntrega: parseInt(body.ordem),
+      ordem: parseInt(body.ordem),
       status: true,
       usuario_id: body.entregador,
       imagem: body.imagem,
@@ -79,7 +79,7 @@ export class AssinantesController {
     assinante.tipo = tipo;
     assinante.descricao = descricao;
     assinante.coordenadas = coordenadas;
-    assinante.ordemEntrega = ordem;
+    assinante.ordem = ordem;
     assinante.status = true;
     assinante.usuario.id = usuario_id;
     assinante.imagem = imagem;

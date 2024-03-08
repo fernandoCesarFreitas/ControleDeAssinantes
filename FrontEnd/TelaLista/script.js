@@ -1,3 +1,7 @@
+let assinantesB = [];
+let entregador = "";
+var indiceAtual = 0;
+var assinantes = [];
 
 function criarElemento(tag, texto) {
   const elemento = document.createElement(tag);
@@ -25,8 +29,8 @@ function criarLinha(assinante) {
 
   colunas.forEach((coluna) => {
     const td = criarElemento("td", assinante[coluna]);
-    td.classList.add("align-middle", "text-wrap", "text-truncate"); 
-    td.style.maxWidth = "260px"; 
+    td.classList.add("align-middle", "text-wrap", "text-truncate");
+    td.style.maxWidth = "260px";
     tr.appendChild(td);
   });
 
@@ -36,11 +40,11 @@ function criarLinha(assinante) {
     "justify-content-center",
     "align-items-center",
     "p-5",
-    "align-middle", 
-    "text-wrap", 
-    "text-truncate" 
+    "align-middle",
+    "text-wrap",
+    "text-truncate"
   );
-  tdAcoes.style.maxWidth = "230px"; 
+  tdAcoes.style.maxWidth = "230px";
 
   const divAcoes = document.createElement("div");
   divAcoes.style.overflowX = "auto";
@@ -184,9 +188,6 @@ function criarLinha(assinante) {
   return tr;
 }
 
-var indiceAtual = 0;
-var assinantes = [];
-
 async function buscarAssinantesC() {
   try {
     const urlParams = new URLSearchParams(window.location.search);
@@ -211,17 +212,14 @@ async function buscarAssinantesC() {
 }
 
 async function abrirModalVer(assinante) {
-  // Se a lista de assinantes estiver vazia, busque os assinantes
   if (assinantes.length === 0) {
     await buscarAssinantesC();
   }
 
-  // Encontre o índice do assinante no array
   indiceAtual = assinantes.findIndex((a) => a.codigo === assinante.codigo);
 
-  // Preencha os campos do modal com as informações do assinante
   $("#modalVerAssinante #codigoAssinante").text(assinante.codigo);
-  $("#modalVerAssinante #ordemAssinante").text(assinante.ordemEntrega);
+  $("#modalVerAssinante #ordemAssinante").text(assinante.ordem);
   $("#modalVerAssinante #nomeAssinante").text(assinante.nome);
   $("#modalVerAssinante #ruaAssinante").text(assinante.rua);
   $("#modalVerAssinante #numeroAssinante").text(assinante.numero);
@@ -233,21 +231,19 @@ async function abrirModalVer(assinante) {
       encodeURIComponent(assinante.coordenadas)
   );
   if (assinante.tipo == 1) {
-    $("#modalVerAssinante #tipoAssinante").text("Diário");
+    $("#modalVerAssinante #tipoAssinante").text("Diário").removeClass("tipo-2"); 
   } else if (assinante.tipo == 2) {
-    $("#modalVerAssinante #tipoAssinante").text("Semanal");
+    $("#modalVerAssinante #tipoAssinante").text("Semanal").addClass("tipo-2"); 
   }
 
-  // Preencha o carrossel com a imagem do assinante
   var carouselInner = $("#modalVerAssinante .carousel-inner");
   carouselInner.empty();
   var carouselItem = $('<div class="carousel-item active"></div>');
   var img = $('<img class="d-block w-100" alt="Imagem do assinante">');
-  img.attr("src", assinante.imagem);
+  img.attr("src", assinante.imagem || "../assets/imagem_generica_casa.jpeg");
   carouselItem.append(img);
   carouselInner.append(carouselItem);
 
-  // Abra o modal
   $("#modalVerAssinante").modal("show");
 }
 
@@ -268,7 +264,7 @@ $("#modalVerAssinante .carousel-control-next").click(function (event) {
 });
 
 function abrirModalEditar(assinante) {
-  console.log("dentro do abrir modal editar assinante", assinante.id);
+  console.log("dentro do abrir modal editar assinante", assinante);
   $("#codigoAssinante").val(assinante.codigo);
   $("#nomeAssinante").val(assinante.nome);
   $("#ruaAssinante").val(assinante.rua);
@@ -278,68 +274,85 @@ function abrirModalEditar(assinante) {
   $("#coordenadasAssinante").val(assinante.coordenadas);
   $("#selectTipo").val(assinante.tipo);
   $("#selectEntregador").val(assinante.usuario_id);
-  $("#ordemAssinante").val(assinante.ordemEntrega);
+  $("#ordemAssinante").val(assinante.ordem);
   $("#descricao").val(assinante.descricao);
+  $("#imagemPreview").attr("src", assinante.imagem);
   $("#modalAssinantes").modal("show");
+
+  if (!assinante.imagem) {
+    $("#mensagemSemImagem").show();
+  } else {
+    $("#mensagemSemImagem").hide();
+  }
+
+  $("#imagem").val("");
 
   $("#formAssinantes")
     .off("submit")
     .submit(async function (event) {
       event.preventDefault();
+
       let imagem = document.querySelector("#imagem").files[0];
-      let base64data = "";
+      let base64data = assinante.imagem;
 
-      let reader = new FileReader();
-      reader.readAsDataURL(imagem);
-      reader.onloadend = async function () {
-        base64data = reader.result;
-
-        let payload = {
-          codigo: $("#codigoAssinante").val().toUpperCase(),
-          nome: $("#nomeAssinante").val().toUpperCase(),
-          rua: $("#ruaAssinante").val().toUpperCase(),
-          numero: $("#numeroAssinante").val().toUpperCase(),
-          bairro: $("#bairroAssinante").val().toUpperCase(),
-          cidade: $("#cidadeAssinante").val().toUpperCase(),
-          coordenadas: $("#coordenadasAssinante").val().toUpperCase(),
-          tipo: $("#selectTipo").val().toUpperCase(),
-          entregador: $("#selectEntregador").val(),
-          ordem: $("#ordemAssinante").val(),
-          descricao: $("#descricao").val().toUpperCase(),
-          imagem: base64data,
-        };
-
-        $("#modalAssinantes").modal("hide");
-        let url = "http://localhost:3000/assinantes/" + assinante.id;
-        let method = "put";
-
-        let resposta = await fetch(url, {
-          method, 
-          headers: {
-            "Content-Type": "application/json", 
-            Accept: "application/json", 
-            Authorization: authorization,
-          },
-          body: JSON.stringify(payload), 
-        });
-
-        if (resposta.ok) {
-         
-          $("#modalCadastroSucesso").modal("show");
-
-          setTimeout(() => {
-            $("#modalCadastroSucesso").modal("hide");
-          }, 2000);
-
-          atualizarTabela();
-        } else if (resposta.status == 401) {
-          let dados = await resposta.json();
-          alert(dados.mensagem);
-        } else {
-          let mensagemErro = await resposta.text();
-          alert(`Erro ${resposta.status}: ${mensagemErro}`);
+      try {
+        if (imagem) {
+          let reader = new FileReader();
+          reader.readAsDataURL(imagem);
+          await new Promise((resolve) => {
+            reader.onloadend = function () {
+              base64data = reader.result;
+              resolve();
+            };
+          });
         }
+      } catch (error) {
+        console.error("Ocorreu um erro ao ler o arquivo: ", error);
+      }
+
+      let payload = {
+        codigo: $("#codigoAssinante").val().toUpperCase(),
+        nome: $("#nomeAssinante").val().toUpperCase(),
+        rua: $("#ruaAssinante").val().toUpperCase(),
+        numero: $("#numeroAssinante").val().toUpperCase(),
+        bairro: $("#bairroAssinante").val().toUpperCase(),
+        cidade: $("#cidadeAssinante").val().toUpperCase(),
+        coordenadas: $("#coordenadasAssinante").val().toUpperCase(),
+        tipo: $("#selectTipo").val().toUpperCase(),
+        entregador: $("#selectEntregador").val(),
+        ordem: $("#ordemAssinante").val(),
+        descricao: $("#descricao").val().toUpperCase(),
+        imagem: base64data,
       };
+      $("#modalAssinantes").modal("hide");
+      let url = "http://localhost:3000/assinantes/" + assinante.id;
+      let method = "put";
+
+      let resposta = await fetch(url, {
+        method,
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: authorization,
+        },
+        body: JSON.stringify(payload),
+      });
+
+      if (resposta.ok) {
+        $("#modalCadastroSucesso").modal("show");
+
+        setTimeout(() => {
+          $("#modalCadastroSucesso").modal("hide");
+        }, 2000);
+
+        await buscarAssinantes();
+      } else if (resposta.status == 401) {
+        let dados = await resposta.json();
+        alert(dados.mensagem);
+      } else {
+        let mensagemErro = await resposta.text();
+        alert(`Erro ${resposta.status}: ${mensagemErro}`);
+      }
     });
 }
 
@@ -360,20 +373,19 @@ async function buscarAssinantes() {
       },
     });
 
-    const assinantes = await resposta.json();
-    console.log(assinantes);
+    assinantesB = await resposta.json();
     const corpoTabela = document.getElementById("corpo-tabela");
-
-    assinantes.forEach((assinante) => {
+    corpoTabela.innerHTML = "";
+    assinantesB.forEach((assinante) => {
       const tr = criarLinha(assinante);
       corpoTabela.appendChild(tr);
     });
 
-    const totalAssinantes = assinantes.length;
-    const assinantesDiarios = assinantes.filter(
+    const totalAssinantes = assinantesB.length;
+    const assinantesDiarios = assinantesB.filter(
       (assinante) => assinante.tipo == 1
     ).length;
-    const assinantesSemanais = assinantes.filter(
+    const assinantesSemanais = assinantesB.filter(
       (assinante) => assinante.tipo == 2
     ).length;
 
@@ -382,30 +394,6 @@ async function buscarAssinantes() {
       assinantesDiarios;
     document.querySelector("#assinantesSemanais").textContent =
       assinantesSemanais;
-  } catch (error) {
-    console.error("Erro ao buscar assinantes:", error);
-  }
-}
-
-async function atualizarTabela() {
-  try {
-    let token = localStorage.getItem("authorization");
-
-    const resposta = await fetch("http://localhost:3000/assinantes", {
-      headers: {
-        Authorization: authorization,
-      },
-    });
-
-    const assinantes = await resposta.json();
-
-    const corpoTabela = document.getElementById("corpo-tabela");
-    corpoTabela.innerHTML = ""; // Limpa a tabela antes de adicionar os novos dados
-
-    assinantes.forEach((assinante) => {
-      const tr = criarLinha(assinante);
-      corpoTabela.appendChild(tr);
-    });
   } catch (error) {
     console.error("Erro ao buscar assinantes:", error);
   }
@@ -422,7 +410,6 @@ async function excluir(id) {
 document
   .querySelector("#confirmarExclusaoBtn")
   .addEventListener("click", async function () {
-    // Obter o id do assinante a ser excluído
     const id = this.getAttribute("data-id");
     let token = localStorage.getItem("authorization");
 
@@ -454,12 +441,11 @@ async function buscarNomeEntregadorEAtualizarTitulo() {
           },
         }
       );
-      console.log(resposta);
       if (!resposta.ok) {
         throw new Error(`Erro ao buscar entregador: ${resposta.status}`);
       }
 
-      const entregador = await resposta.json();
+      entregador = await resposta.json();
       const tituloTabela = document.getElementById("titulo-tabela");
       tituloTabela.textContent = `Tabela de Assinantes - ${entregador.nome}`;
     } catch (error) {
@@ -468,5 +454,98 @@ async function buscarNomeEntregadorEAtualizarTitulo() {
   }
 }
 
+async function getEntregadores() {
+  let token = localStorage.getItem("authorization");
+
+  let response = await fetch("http://localhost:3000/usuarios", {
+    headers: {
+      Authorization: token,
+    },
+  });
+
+  let entregadores = await response.json();
+  return entregadores;
+}
+
+async function setEntregadores() {
+  let entregadores = await getEntregadores();
+  let selectOption = document.createElement("option");
+  selectOption.innerText = "Selecione";
+  selectEntregador.appendChild(selectOption);
+
+  for (let entregador of entregadores) {
+    let option = document.createElement("option");
+    option.value = entregador.id;
+    option.innerText = entregador.nome;
+    selectEntregador.appendChild(option);
+  }
+}
+
+function gerarCSV() {
+  try {
+    const assinantes = assinantesB;
+
+    let csvContent =
+      "Código;Nome;Rua;Número;Bairro;Cidade;Coordenadas;Referências\n";
+    assinantes.forEach((assinante) => {
+      csvContent += `${assinante.codigo};${assinante.nome};${assinante.rua};${assinante.numero};${assinante.bairro};${assinante.cidade};${assinante.coordenadas};${assinante.descricao}\n`;
+    });
+
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", "assinantes.csv");
+
+    link.click();
+
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error("Erro ao gerar o arquivo CSV:", error);
+  }
+}
+
+function gerarPDF() {
+  try {
+    const assinantes = assinantesB;
+    
+    const dataAtual = new Date().toLocaleDateString('pt-BR');
+    
+    const pdfContent = {
+      content: [
+        {
+          text: `Lista de Assinantes entregador ${entregador.nome} - ${dataAtual}`, 
+          style: "header",
+        },
+        { text: "\n" },
+        ...assinantes.map((assinante) => [
+          {
+            text: `Código: ${assinante.codigo}, Nome: ${assinante.nome}, Rua: ${assinante.rua}, Número: ${assinante.numero}, Bairro: ${assinante.bairro}, Cidade: ${assinante.cidade}, Coordenadas: ${assinante.coordenadas}, Referencias: ${assinante.descricao}`,
+          },
+          { text: `Tipo: ${assinante.tipo == 1 ? 'Diário' : 'Semanal'}`, bold: true, decoration: 'underline' }, // Adiciona negrito e sublinhado ao tipo de assinatura
+          { text: "\n" },
+          { text: "\n\n" },
+        ]),
+      ],
+      styles: {
+        header: {
+          fontSize: 18,
+          bold: true,
+        },
+      },
+    };
+
+    const nomeArquivo = `assinantes_${dataAtual}.pdf`;
+    
+    pdfMake.createPdf(pdfContent).download(nomeArquivo);
+  } catch (error) {
+    console.error("Erro ao gerar o arquivo PDF:", error);
+  }
+}
+
+
+
+setEntregadores();
 buscarNomeEntregadorEAtualizarTitulo();
 buscarAssinantes();

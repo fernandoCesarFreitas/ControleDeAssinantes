@@ -23,15 +23,15 @@ form.addEventListener("submit", async (event) => {
   });
 
   if (resposta.ok) {
-    
     let dados = await resposta.json();
     localStorage.setItem("authorization", `${dados.type} ${dados.token}`);
+    sessionStorage.setItem("authorization", `${dados.type} ${dados.token}`); 
     localStorage.setItem("user", JSON.stringify(dados.usuario));
     window.location.href = "../TelaPrincipal/index.html"; 
   } else if (resposta.status == 401) {
     let dados = await resposta.json();
     alert(dados.mensagem);
   } else {
-    alert("algo deu errado!");
+    alert("Algo deu errado!");
   }
 });

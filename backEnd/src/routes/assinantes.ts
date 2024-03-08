@@ -1,5 +1,4 @@
 import express, { Router, Request, Response, NextFunction } from "express";
-import multer from "multer";
 import * as yup from "yup";
 import { AssinantesController } from "../controller/AssinantesController";
 import { Assinantes } from "../models/Assinantes";
@@ -12,11 +11,11 @@ async function validarPayload(req, res, next) {
     codigo: yup.string().min(1).max(255).required(),
     nome: yup.string().min(3).max(255).required(),
     rua: yup.string().min(3).max(255).required(),
-    numero: yup.string().min(1).max(11).required(),
-    bairro: yup.string().min(3).max(255).required(),
+    numero: yup.string().min(1).max(11),
+    bairro: yup.string().min(3).max(255),
     cidade: yup.string().min(1).max(255).required(),
-    ordem: yup.string().min(1).max(11),
-    coordenadas: yup.string().min(1).max(255).required(),
+    ordem: yup.string().min(0).max(11),
+    coordenadas: yup.string().min(1).max(255),
     tipo: yup.string().min(1).max(255).required(),
     entregador: yup.string().min(1).required(),
     descricao: yup.string().min(1).max(400),
@@ -74,5 +73,6 @@ rotas.put(
 rotas.delete("/assinantes/:id", validar, assinanteController.delete);
 
 rotas.get("/assinantesPorEntregador/:id", assinanteController.listByUser);
+
 
 export default rotas;

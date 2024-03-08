@@ -70,7 +70,7 @@ form.addEventListener("submit", async (event) => {
 // Cadastro de Assinantes
 
 formAssinantes.addEventListener("submit", async (event) => {
-  event.stopPropagation(); //para nao recarregar a pagina
+  event.stopPropagation(); 
   event.preventDefault();
   let imagem = document.querySelector("#imagem").files[0];
   let base64data = "";
@@ -147,25 +147,26 @@ fetch("http://localhost:3000/usuarios", {
     usuariosAtivos.forEach((usuario, index) => {
       if (index % 2 === 0) {
         row = document.createElement("div");
-        row.className = "row row-cols-2";
+        row.className = "row row-cols-2 justify-content-center mb-1";
       }
 
       let divCol = document.createElement("div");
-      divCol.className = "col-sm-6 mb-5";
+      divCol.className = "col-sm-5 mb-3"; // Adiciona espaçamento na parte inferior da coluna
 
       let divCard = document.createElement("div");
       divCard.className = "card";
+      divCard.style.width = "400px"; // Defina a largura desejada para o card
 
       let imgContainer = document.createElement("div");
       imgContainer.className = "rounded-top"; 
-      imgContainer.style.height = "200px"; 
+      imgContainer.style.height = "300px"; // Defina a altura fixa para a imagem
       imgContainer.style.width = "100%";
       imgContainer.style.overflow = "hidden";
 
       let img = document.createElement("img");
       img.className = "img-thumbnail";
       img.style.width = "100%";
-      img.style.height = "100%";
+      img.style.height = "100%"; // Faça a imagem preencher o contêiner
       img.style.objectFit = "cover";
       img.alt = "Imagem do usuário";
 
@@ -203,10 +204,7 @@ fetch("http://localhost:3000/usuarios", {
 
       divCard.addEventListener("click", function () {
         window.location.href = `../TelaLista/index.html?usuarioId=${usuario.id}`;
-        
-       
       });
-      
 
       row.appendChild(divCol);
 
@@ -214,6 +212,7 @@ fetch("http://localhost:3000/usuarios", {
         document.getElementById("card-container").appendChild(row);
       }
     });
+
     
     function onCardsLoaded() {
       document.body.style.display = 'none';
@@ -233,7 +232,6 @@ async function getEntregadores() {
   });
 
   let entregadores = await response.json();
-  console.log(entregadores);
   return entregadores;
 }
 

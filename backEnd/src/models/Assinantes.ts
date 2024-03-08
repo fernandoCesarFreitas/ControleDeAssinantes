@@ -42,7 +42,7 @@ export class Assinantes extends BaseEntity {
   coordenadas: string;
 
   @Column('int', { nullable: true })
-  ordemEntrega: number;
+  ordem: number;
 
   @Column({ nullable: true })
   status: boolean;
