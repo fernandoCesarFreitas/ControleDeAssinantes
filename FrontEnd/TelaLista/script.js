@@ -1,7 +1,7 @@
 let assinantesB = [];
 let entregador = "";
-var indiceAtual = 0;
-var assinantes = [];
+let indiceAtual = 0;
+let assinantes = [];
 
 function criarElemento(tag, texto) {
   const elemento = document.createElement(tag);
